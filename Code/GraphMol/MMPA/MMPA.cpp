@@ -108,18 +108,18 @@ static void addResult(std::vector<std::pair<ROMOL_SPTR, ROMOL_SPTR>>
 #ifdef MMPA_DEBUG
     {
       std::string symbol =
-          em.getAtomWithIdx(bonds_selected[bi].first)->getSymbol();
+          em.getAtomWithIdx(bi.first)->getSymbol();
       int label = 0;
-      em.getAtomWithIdx(bonds_selected[bi].first)
+      em.getAtomWithIdx(bi.first)
           ->getPropIfPresent(common_properties::molAtomMapNumber, label);
       char a1[32];
       if (0 == label)
         sprintf(a1, "\'%s\'", symbol.c_str(), label);
       else
         sprintf(a1, "\'%s:%u\'", symbol.c_str(), label);
-      symbol = em.getAtomWithIdx(bonds_selected[bi].second)->getSymbol();
+      symbol = em.getAtomWithIdx(bi.second)->getSymbol();
       label = 0;
-      em.getAtomWithIdx(bonds_selected[bi].second)
+      em.getAtomWithIdx(bi.second)
           ->getPropIfPresent(common_properties::molAtomMapNumber, label);
       char a2[32];
       if (0 == label)
@@ -127,8 +127,8 @@ static void addResult(std::vector<std::pair<ROMOL_SPTR, ROMOL_SPTR>>
       else
         sprintf(a2, "\'%s:%u\'", symbol.c_str(), label);
 
-      std::cout << "(" << bonds_selected[bi].first << a1 << ","
-                << bonds_selected[bi].second << a2 << ") ";
+      std::cout << "(" << bi.first << a1 << ","
+                << bi.second << a2 << ") ";
     }
 #endif
     isotope += 1;
