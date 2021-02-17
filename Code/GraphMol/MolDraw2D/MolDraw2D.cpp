@@ -264,11 +264,12 @@ void MolDraw2D::drawMolecule(const ROMol &mol, const std::string &legend,
     if (legend_height_ < 20) {
       legend_height_ = 20;
     }
+  } else {
+    legend_height_ = 0;
   }
   drawMolecule(mol, highlight_atoms, highlight_bonds, highlight_atom_map,
                highlight_bond_map, highlight_radii, confId);
   drawLegend(legend);
-  legend_height_ = 0;
 }
 
 // ****************************************************************************
@@ -286,6 +287,8 @@ void MolDraw2D::drawMoleculeWithHighlights(
 
   if (!legend.empty()) {
     legend_height_ = int(0.05 * double(panelHeight()));
+  } else {
+    legend_height_ = 0;
   }
   pushDrawDetails();
   unique_ptr<RWMol> rwmol =
@@ -356,7 +359,6 @@ void MolDraw2D::drawMoleculeWithHighlights(
   setLineWidth(origWidth);
 
   drawLegend(legend);
-  legend_height_ = 0;
   popDrawDetails();
 }
 
@@ -381,6 +383,7 @@ void MolDraw2D::get2DCoordsMol(RWMol &mol, double &offset, double spacing,
   const bool canonOrient = true;
   const bool kekulize = false;  // don't kekulize, we just did that
   RDDepict::compute2DCoords(mol, nullptr, canonOrient);
+
   MolDraw2DUtils::prepareMolForDrawing(mol, kekulize);
   double minX = 1e8;
   double maxX = -1e8;
@@ -2337,7 +2340,9 @@ void MolDraw2D::drawAnnotation(const string &note,
   text_drawer_->setMinFontSize(-1);
   text_drawer_->setFontScale(drawOptions().annotationFontScale *
                              full_font_scale);
-  drawString(note, note_rect->trans_);
+  Point2D draw_cds = getDrawCoords(note_rect->trans_);
+  text_drawer_->drawString(note, draw_cds, TextAlignType::MIDDLE);
+
   text_drawer_->setMinFontSize(omfs);
   text_drawer_->setFontScale(full_font_scale);
 }
@@ -3162,7 +3167,7 @@ OrientType MolDraw2D::getAtomOrientation(const RDKit::Atom &atom) const {
   // when they are drawn at the bottom of the molecule.
   static const double VERT_SLOPE = tan(70.0 * M_PI / 180.0);
 
-  auto mol = atom.getOwningMol();
+  auto &mol = atom.getOwningMol();
   const Point2D &at1_cds = at_cds_[activeMolIdx_][atom.getIdx()];
   Point2D nbr_sum(0.0, 0.0);
   // cout << "Nbours for atom : " << at1->getIdx() << endl;
@@ -3209,7 +3214,7 @@ OrientType MolDraw2D::getAtomOrientation(const RDKit::Atom &atom) const {
       } else if (atom.getDegree() == 3) {
         // Atoms of degree 3 can sometimes have a bond pointing down with S
         // orientation or up with N orientation, which puts the H on the bond.
-        auto mol = atom.getOwningMol();
+        auto &mol = atom.getOwningMol();
         const Point2D &at1_cds = at_cds_[activeMolIdx_][atom.getIdx()];
         for (const auto &nbri : make_iterator_range(mol.getAtomBonds(&atom))) {
           const Bond *bond = mol[nbri];

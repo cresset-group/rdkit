@@ -89,10 +89,10 @@ if(RDK_BUILD_SWIG_WRAPPERS!=ON)
 endif()
 
 if(RDK_SWIG_STATIC AND RDK_BUILD_SWIG_WRAPPERS)
-  if(NOT RDK_INSTALL_STATIC_LIBS)
+  if(NOT MSVC AND NOT RDK_INSTALL_STATIC_LIBS)
     message("Enabling RDK_INSTALL_STATIC_LIBS because RDK_SWIG_STATIC is set.")
     set(RDK_INSTALL_STATIC_LIBS ON CACHE BOOL "install the rdkit static libraries" FORCE)
-  endif(NOT RDK_INSTALL_STATIC_LIBS)
+  endif(NOT MSVC AND NOT RDK_INSTALL_STATIC_LIBS)
 endif()
 
 if(NOT (MSVC AND (NOT RDK_INSTALL_DLLS_MSVC)))
@@ -100,10 +100,10 @@ if(NOT (MSVC AND (NOT RDK_INSTALL_DLLS_MSVC)))
 endif()
 
 if(RDK_PGSQL_STATIC AND RDK_BUILD_PGSQL)
-  if(NOT RDK_INSTALL_STATIC_LIBS)
+  if(NOT MSVC AND NOT RDK_INSTALL_STATIC_LIBS)
     message("Enabling RDK_INSTALL_STATIC_LIBS because RDK_PGSQL_STATIC is set.")
     set(RDK_INSTALL_STATIC_LIBS ON CACHE BOOL "install the rdkit static libraries" FORCE)
-  endif(NOT RDK_INSTALL_STATIC_LIBS)
+  endif(NOT MSVC AND NOT RDK_INSTALL_STATIC_LIBS)
 endif()
 
 
@@ -121,7 +121,7 @@ set(RDK_PYTHON_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/rdkit")
 # Config variables:
 set(RDKit_Year "2020")
 set(RDKit_Month "09")
-set(RDKit_Revision "1")
+set(RDKit_Revision "4")
 set(RDKit_RevisionModifier "")
 set(RDKit_ABI "1")
 
@@ -390,7 +390,10 @@ if(RDK_USE_BOOST_SERIALIZATION)
     else()
       set(Boost_LIBRARIES ${T_LIBS})
     endif()
-  target_compile_definitions(rdkit_base INTERFACE -DRDK_USE_BOOST_SERIALIZATION -DBOOST_SERIALIZATION_DYN_LINK)
+    target_compile_definitions(rdkit_base INTERFACE -DRDK_USE_BOOST_SERIALIZATION)
+    if(NOT Boost_USE_STATIC_LIBS)
+      target_compile_definitions(rdkit_base INTERFACE -DBOOST_SERIALIZATION_DYN_LINK)
+    endif()
 endif()
 
 

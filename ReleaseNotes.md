@@ -1,3 +1,126 @@
+# Release_2020.09.4
+(Changes relative to Release_2020.09.3)
+
+## Acknowledgements
+Jason Biggs Patrick Buder, Andrew Dalke, Enrico Gandini, Maximilian Greil, Brian
+Kelley, Luca Naef, António JM Ribeiro, Ricardo Rodriguez Schmidt, Pascal
+Soveaux, Paolo Tosco, Yutong Zhao, 'Robins', 'sirbiscuit', 'AnPallo',
+'noncomputable' 
+
+## Bug Fixes:
+  - Casting int to uint in MorganFingerprintHelper leads to unexpected behaviour.
+ (github #1761 from SiPa13)
+  - MolChemicalFeature.GetPos() returns value for molecule's default conformer
+ (github #2530 from greglandrum)
+  - PDB output flavor&2 documentation change
+ (github #3089 from adalke)
+  - Unidentifiable C++ Exception with FMCS
+ (github #3635 from proteneer)
+  - Bump catch2 version to allow builds on Apple M1
+ (github #3641 from naefl)
+  - Segmentation fault when parsing InChI
+ (github #3645 from AnPallo)
+  - RDK_BUILD_THREADSAFE_SSS does not work as expected
+ (github #3646 from pascal-soveaux)
+  - Disabling MaeParser and CoordGen Support Breaks the Build
+ (github #3648 from proteneer)
+  - BondStereo info lost in FragmentOnBonds()
+ (github #3649 from bp-kelley)
+  - memory leak when sanitization fails in InChIToMol() 
+ (github #3655 from greglandrum)
+  - Qt GUI libraries being linked into rdmolops.so when Qt support is enabled
+ (github #3658 from ricrogz)
+  - Documentation of Chem.rdmolops.GetMolFrags's frag argument is wrong
+ (github #3670 from noncomputable)
+  - fmcs() + bogus input causes engine crash
+ (github #3687 from robins)
+  - qmol_from_ctab() with NULL crashes engine
+ (github #3688 from robins)
+  - qmol_from_smiles() + bogus input causes engine crash
+ (github #3689 from robins)
+  - Check PIL support for tostring and fromstring
+ (github #3690 from sirbiscuit)
+  - Pandas AttributeError when rendering Molecule in DataFrame
+ (github #3701 from enricogandini)
+  - Memory leak in EnumerateLibrary
+ (github #3702 from jose-mr)
+  - Regression in depiction of double bonds in aromatic rings
+ (github #3744 from ptosco)
+  - Fix comment to match the code in RemoveHsParameters
+ (github #3747 from jasondbiggs)
+
+# Release_2020.09.3
+(Changes relative to Release_2020.09.2)
+
+## Acknowledgements
+Ivan Chernyshov, David Cosgrove, James Gayvert, Mark Mackey, Philippe Schwaller, 
+Ricardo Rodriguez-Schmidt, Paolo Tosco, Piotr Wawrzyniak, James Gayvert
+
+## Bug Fixes:
+  - Error in ChemAxon SMILES "parsing"
+ (github #3320 from IvanChernyshov)
+  - Error adding PNG metadata when kekulize=False
+ (github #3543 from gayverjr)
+  - rdMolDraw2D, problems during generation of pictures from SMARTS, differences between Cairo and SVG
+ (github #3572 from wopozka)
+  - Get MolDraw2DQt working again
+ (github #3592 from greglandrum)
+  - Scientific notation in SDF V3000 files
+ (github #3597 from mark-cresset)
+  - Fix: add missing python wrappers for MolDraw2DQt
+ (github #3613 from greglandrum)
+  - V3K mol block parser not saving the chiral flag
+ (github #3620 from greglandrum)
+  - Inconsistent metal disconnectors
+ (github #3625 from pschwllr)
+  - Ring stereochemistry not properly removed from N atoms
+ (github #3631 from greglandrum)
+  - moldraw2djs should not close all polygonal paths
+ (github #3634 from greglandrum)
+
+# Release_2020.09.2
+(Changes relative to Release_2020.09.1)
+
+## Acknowledgements
+David Cosgrove, Steven Kearnes, Dan Nealschneider, Dan Skatov, Jaime
+Rodríguez-Guerra, Ricardo Rodriguez-Schmidt, Paolo Tosco, Kazuya Ujihara,
+Riccardo Vianello, Shuzhe Wang, 'amateurcat', 'GintasKam'
+
+## Bug Fixes:
+  - Problem with lifetime linkage of mols and conformers
+ (github #3492 from amateurcat)
+  - Traceback when pickling ROMol after BCUT descriptors are calculated
+ (github #3511 from d-b-w)
+  - Fix AUTOCORR2D descriptors
+ (github #3512 from ricrogz)
+  - SDMolSupplier requires several attempts to load a SDF file in Python 3.6/3.7
+ (github #3517 from jaimergp)
+  - Remove accidentally included boost header
+ (github #3518 from ricrogz)
+  - legend_height_ should be preserved after drawing the molecule
+ (github #3520 from greglandrum)
+  - remove the include directive for unused <access/tuptoaster.h> header
+ (github #3525 from rvianello)
+  - C++ build fails when configured with RDKIT_USE_BOOST_SERIALIZATION=OFF
+ (github #3529 from rvianello)
+  - Newest RDKIT version allowing chemically invalid smiles
+ (github #3531 from GintasKam)
+  - Behaviour of generate_aligned_coords for erroneous inputs
+ (github #3539 from dskatov)
+  - Drawing artifacts in draw_to_canvas_with_offset
+ (github #3540 from dskatov)
+  - Add missing methods to remove SubstanceGroup attributes
+ (github #3547 from greglandrum)
+  - Error writing SDF data containing UTF-8 to a StringIO object
+ (github #3553 from greglandrum)
+  - correct handling of amide distances for macrocycles
+ (github #3559 from hjuinj)
+  - Fix example of SmilesToMol
+ (github #3575 from kazuyaujihara)
+  - atom/bond notes handle capital letters incorrectly
+ (github #3577 from greglandrum)
+
+
 # Release_2020.09.1
 (Changes relative to Release_2020.03.1)
 

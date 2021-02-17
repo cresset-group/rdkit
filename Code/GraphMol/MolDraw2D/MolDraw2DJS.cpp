@@ -98,8 +98,8 @@ void MolDraw2DJS::drawPolygon(const std::vector<Point2D> &cds) {
     Point2D ci = getDrawCoords(cds[i]);
     d_context.call<void>("lineTo", std::round(ci.x), std::round(ci.y));
   }
-  d_context.call<void>("closePath");
   if (fillPolys()) {
+    d_context.call<void>("closePath");
     d_context.set("fillStyle", col);
     d_context.call<void>("fill");
   }
@@ -133,9 +133,9 @@ void MolDraw2DJS::drawEllipse(const Point2D &cds1, const Point2D &cds2) {
 // ****************************************************************************
 void MolDraw2DJS::clearDrawing() {
   std::string col = DrawColourToSVG(drawOptions().backgroundColour);
-  d_context.call<void>("clearRect", 0, 0, width(), height());
+  d_context.call<void>("clearRect", offset().x, offset().y, width(), height());
   d_context.set("fillStyle", col);
-  d_context.call<void>("fillRect", 0, 0, width(), height());
+  d_context.call<void>("fillRect", offset().x, offset().y, width(), height());
 }
 
 }  // namespace RDKit

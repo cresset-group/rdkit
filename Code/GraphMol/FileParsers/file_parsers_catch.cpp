@@ -17,6 +17,8 @@
 #include <GraphMol/SmilesParse/SmilesWrite.h>
 #include <GraphMol/SmilesParse/SmilesParse.h>
 #include <GraphMol/SmilesParse/SmartsWrite.h>
+#include <GraphMol/FileParsers/SequenceParsers.h>
+#include <GraphMol/FileParsers/SequenceWriters.h>
 #include <GraphMol/FileParsers/PNGParser.h>
 #include <RDGeneral/FileParseException.h>
 #include <boost/algorithm/string.hpp>
@@ -2055,5 +2057,106 @@ M  END
     CHECK(sgs[0].getProp<std::string>("TYPE") == "DAT");
     CHECK(sgs[0].getProp<std::string>("FIELDINFO").empty());
     CHECK(sgs[0].getProp<std::string>("QUERYOP") == "\"");
+  }
+}
+
+TEST_CASE("github #3597: Scientific notation in SDF V3000 files", "[bug]") {
+  SECTION("basics") {
+    auto m = R"CTAB(
+  Mrv2020 11302014062D          
+
+  2  1  0  0  0  0            999 V2000
+   -2.8125    1.9196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.0980    2.3321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+M  END
+)CTAB"_ctab;
+    REQUIRE(m);
+    m->getConformer().getAtomPos(0).z = 1e-6;
+    m->getConformer().getAtomPos(1).z = 1e-4;
+    auto mb = MolToV3KMolBlock(*m);
+    CHECK(mb.find("1e-06") == std::string::npos);
+  }
+  SECTION("toosmall") {
+    auto m = R"CTAB(
+  Mrv2020 11302014062D          
+
+  2  1  0  0  0  0            999 V2000
+   -2.8125    1.9196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.0980    2.3321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+M  END
+)CTAB"_ctab;
+    REQUIRE(m);
+    m->getConformer().getAtomPos(0).z = 1e-17;
+    m->getConformer().getAtomPos(1).z = 1e-4;
+    auto mb = MolToV3KMolBlock(*m);
+    // std::cerr<<mb<<std::endl;
+    CHECK(mb.find("M  V30 1 C -2.812500 1.919600 0.000000 0") !=
+          std::string::npos);
+  }
+}
+
+TEST_CASE("github #3620: V3K mol block parser not saving the chiral flag",
+          "[bug]") {
+  SECTION("basics") {
+    auto m = R"CTAB(
+  Mrv2014 12082009582D          
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 3 0 0 1
+M  V30 BEGIN ATOM
+M  V30 1 C -1.875 6.0417 0 0 CFG=2
+M  V30 2 C -0.5413 6.8117 0 0
+M  V30 3 F -3.2087 6.8117 0 0
+M  V30 4 Cl -1.875 4.5017 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 3
+M  V30 2 1 1 4
+M  V30 3 1 1 2 CFG=1
+M  V30 END BOND
+M  V30 END CTAB
+M  END
+)CTAB"_ctab;
+    REQUIRE(m);
+    unsigned int chiralFlag = 0;
+    CHECK(
+        m->getPropIfPresent(common_properties::_MolFileChiralFlag, chiralFlag));
+    CHECK(chiralFlag == 1);
+    auto mb = MolToV3KMolBlock(*m);
+    CHECK(mb.find("4 3 0 0 1") != std::string::npos);
+  }
+}
+
+TEST_CASE("test bond flavors when writing PDBs", "[bug]") {
+  SECTION("basics") {
+    std::unique_ptr<RWMol> m{SequenceToMol("G")};
+    REQUIRE(m);
+    int confId = -1;
+    {
+      int flavor = 0;
+      auto pdb = MolToPDBBlock(*m, confId, flavor);
+      CHECK(pdb.find("CONECT    1    2\n") != std::string::npos);
+      CHECK(pdb.find("CONECT    3    4    4    5\n") != std::string::npos);
+    }
+    {
+      int flavor = 2;
+      auto pdb = MolToPDBBlock(*m, confId, flavor);
+      CHECK(pdb.find("CONECT    1    2\n") == std::string::npos);
+      CHECK(pdb.find("CONECT    3    4    4\n") != std::string::npos);
+    }
+    {
+      int flavor = 8;
+      auto pdb = MolToPDBBlock(*m, confId, flavor);
+      CHECK(pdb.find("CONECT    1    2\n") != std::string::npos);
+      CHECK(pdb.find("CONECT    3    4    5\n") != std::string::npos);
+    }
+    {
+      int flavor = 2 | 8;
+      auto pdb = MolToPDBBlock(*m, confId, flavor);
+      CHECK(pdb.find("CONECT") == std::string::npos);
+    }
   }
 }

@@ -340,7 +340,7 @@ double hkAlphaHelper(const RDKit::ROMol &mol, python::object atomContribs) {
 }
 
 RDKit::SparseIntVect<std::uint32_t> *MorganFingerprintHelper(
-    const RDKit::ROMol &mol, int radius, int nBits, python::object invariants,
+    const RDKit::ROMol &mol, unsigned int radius, int nBits, python::object invariants,
     python::object fromAtoms, bool useChirality, bool useBondTypes,
     bool useFeatures, bool useCounts, python::object bitInfo,
     bool includeRedundantEnvironments) {
@@ -415,6 +415,10 @@ RDKit::SparseIntVect<std::uint32_t> *MorganFingerprintHelper(
 }
 
 #ifdef RDK_HAS_EIGEN3
+python::list BCUT(const RDKit::ROMol &mol) {
+  return python::list(RDKit::Descriptors::BCUT2D(mol));
+}
+
 std::pair<double, double> BCUT2D_list(const RDKit::ROMol &m,
                                       python::list atomprops) {
   std::vector<double> dvec;
@@ -457,7 +461,7 @@ struct std_pair_to_python_converter {
 #endif
 }  // namespace
 RDKit::SparseIntVect<std::uint32_t> *GetMorganFingerprint(
-    const RDKit::ROMol &mol, int radius, python::object invariants,
+    const RDKit::ROMol &mol, unsigned int radius, python::object invariants,
     python::object fromAtoms, bool useChirality, bool useBondTypes,
     bool useFeatures, bool useCounts, python::object bitInfo,
     bool includeRedundantEnvironments) {
@@ -466,7 +470,7 @@ RDKit::SparseIntVect<std::uint32_t> *GetMorganFingerprint(
       useFeatures, useCounts, bitInfo, includeRedundantEnvironments);
 }
 RDKit::SparseIntVect<std::uint32_t> *GetHashedMorganFingerprint(
-    const RDKit::ROMol &mol, int radius, int nBits, python::object invariants,
+    const RDKit::ROMol &mol, unsigned int radius, unsigned int nBits, python::object invariants,
     python::object fromAtoms, bool useChirality, bool useBondTypes,
     bool useFeatures, python::object bitInfo,
     bool includeRedundantEnvironments) {
@@ -476,7 +480,7 @@ RDKit::SparseIntVect<std::uint32_t> *GetHashedMorganFingerprint(
 }
 
 ExplicitBitVect *GetMorganFingerprintBV(
-    const RDKit::ROMol &mol, int radius, unsigned int nBits,
+    const RDKit::ROMol &mol, unsigned int radius, unsigned int nBits,
     python::object invariants, python::object fromAtoms, bool useChirality,
     bool useBondTypes, bool useFeatures, python::object bitInfo,
     bool includeRedundantEnvironments) {
@@ -508,8 +512,9 @@ ExplicitBitVect *GetMorganFingerprintBV(
   }
   ExplicitBitVect *res;
   res = RDKit::MorganFingerprints::getFingerprintAsBitVect(
-      mol, static_cast<unsigned int>(radius), nBits, invars, froms.get(),
-      useChirality, useBondTypes, false, bitInfoMap,
+      mol, radius, nBits,
+      invars, froms.get(), useChirality,
+      useBondTypes, false, bitInfoMap,
       includeRedundantEnvironments);
   if (bitInfoMap) {
     bitInfo.attr("clear")();
@@ -1706,8 +1711,6 @@ BOOST_PYTHON_MODULE(rdMolDescriptors) {
 
 #ifdef RDK_HAS_EIGEN3
   python::scope().attr("_BCUT2D_version") = RDKit::Descriptors::BCUT2DVersion;
-  std::vector<double> (*BCUT)(const RDKit::ROMol &) =
-      &RDKit::Descriptors::BCUT2D;
   std::pair<double, double> (*BCUT_atomprops)(
       const RDKit::ROMol &, const std::string &) = &RDKit::Descriptors::BCUT2D;
   docString =
