@@ -72,7 +72,8 @@ option(RDK_BUILD_MINIMAL_LIB_RXN "build support for reactions into MinimalLib" O
 option(RDK_BUILD_MINIMAL_LIB_SUBSTRUCTLIBRARY "build support for SubstructLibrary into MinimalLib" ON )
 option(RDK_BUILD_MINIMAL_LIB_MCS "build support for MCS into MinimalLib" OFF )
 
-set(RDK_BOOST_VERSION "1.70.0")
+#set(RDK_BOOST_VERSION "1.70.0")
+set(RDK_BOOST_VERSION "1.85.0")
 
 if(NOT MSVC)
   if(RDK_OPTIMIZE_POPCNT)
@@ -454,6 +455,7 @@ if(RDK_USE_BOOST_IOSTREAMS)
 endif()
 
 
+set(Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 # set the boost include directories and linkage:
 target_include_directories(rdkit_base INTERFACE
                            $<BUILD_INTERFACE:${RDKit_CodeDir}>

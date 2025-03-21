@@ -256,7 +256,7 @@ BOOST_PYTHON_MODULE(rdBase) {
 
   RegisterVectorConverter<std::pair<int, int>>("MatchTypeVect");
 
-  path_converter();
+  [[maybe_unused]] path_converter pc;
 
   RegisterListConverter<int>();
   RegisterListConverter<std::vector<int>>();
