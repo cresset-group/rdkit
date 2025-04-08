@@ -305,7 +305,7 @@ if(RDK_BUILD_PYTHON_WRAPPERS)
 
   #-------
   # pull in python:
-  find_package(Python3 COMPONENTS Interpreter Development.Module NumPy)
+  find_package(Python3 COMPONENTS Interpreter Development NumPy)
   target_include_directories(rdkit_py_base INTERFACE ${Python3_INCLUDE_DIRS})
   target_include_directories(rdkit_py_base INTERFACE ${Python3_NumPy_INCLUDE_DIRS})
 
@@ -434,7 +434,7 @@ endif()
 
 if(RDK_USE_BOOST_SERIALIZATION)
     find_package(Boost ${RDK_BOOST_VERSION} COMPONENTS system serialization iostreams REQUIRED CONFIG)
-    target_link_libraries(rdkit_base INTERFACE ${Boost_LIBRARIES})
+    target_link_libraries(rdkit_base INTERFACE Boost::system Boost::serialization Boost::iostreams)
     target_compile_definitions(rdkit_base INTERFACE -DRDK_USE_BOOST_SERIALIZATION)
     if(NOT Boost_USE_STATIC_LIBS)
       target_compile_definitions(rdkit_base INTERFACE -DBOOST_SERIALIZATION_DYN_LINK)
@@ -444,7 +444,7 @@ endif()
 if(RDK_USE_BOOST_IOSTREAMS)
     target_compile_definitions(rdkit_base INTERFACE -DRDK_USE_BOOST_IOSTREAMS)
     find_package(Boost ${RDK_BOOST_VERSION} COMPONENTS system iostreams REQUIRED CONFIG)
-    target_link_libraries(rdkit_base INTERFACE ${Boost_LIBRARIES})
+    target_link_libraries(rdkit_base INTERFACE Boost::system Boost::iostreams)
 
     if (NOT Boost_USE_STATIC_LIBS)
       target_compile_definitions(rdkit_base INTERFACE -DBOOST_IOSTREAMS_DYN_LINK)
@@ -474,7 +474,6 @@ target_include_directories(rdkit_base INTERFACE
                            $<INSTALL_INTERFACE:${RDKit_HdrDir}>
                            ${Boost_INCLUDE_DIRS}
                            )
-target_link_libraries(rdkit_base INTERFACE ${BOOST_LIBRARIES})
 
 
 if(RDK_BUILD_PGSQL)
